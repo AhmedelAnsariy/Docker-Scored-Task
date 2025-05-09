@@ -1,24 +1,20 @@
 import psycopg2
 import redis
 import os
+from psycopg2 import OperationalError
 
-# PostgreSQL connection
 def get_db_connection():
-    return psycopg2.connect(
-        host=os.getenv("POSTGRES_HOST", "db"),
-        database=os.getenv("POSTGRES_DB", "productsdb"),
-        user=os.getenv("POSTGRES_USER", "user"),
-        password=os.getenv("POSTGRES_PASSWORD", "password")
-    )
+    try:
+        return psycopg2.connect(
+            host=os.getenv("POSTGRES_HOST", "db"),
+            database=os.getenv("POSTGRES_DB", "productsdb"),
+            user=os.getenv("POSTGRES_USER", "user"),
+            password=os.getenv("POSTGRES_PASSWORD", "password")
+        )
+    except OperationalError as e:
+        print(f"Unable to connect to the database: {e}")
+        raise
 
-# Redis connection
-redis_client = redis.Redis(
-    host=os.getenv("REDIS_HOST", "redis"),
-    port=6379,
-    decode_responses=True
-)
-
-# Create table if not exists (run once at startup)
 def init_db():
     conn = get_db_connection()
     cursor = conn.cursor()
