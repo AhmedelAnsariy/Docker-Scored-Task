@@ -1,15 +1,24 @@
 import psycopg2
 import redis
 import os
+import time
 
-# PostgreSQL connection
-def get_db_connection():
-    return psycopg2.connect(
-        host=os.getenv("POSTGRES_HOST", "db"),
-        database=os.getenv("POSTGRES_DB", "productsdb"),
-        user=os.getenv("POSTGRES_USER", "user"),
-        password=os.getenv("POSTGRES_PASSWORD", "password")
-    )
+# PostgreSQL connection with retry
+def get_db_connection(retries=5, delay=5):
+    for attempt in range(retries):
+        try:
+            conn = psycopg2.connect(
+                host=os.getenv("POSTGRES_HOST", "db"),
+                database=os.getenv("POSTGRES_DB", "productsdb"),
+                user=os.getenv("POSTGRES_USER", "user"),
+                password=os.getenv("POSTGRES_PASSWORD", "password")
+            )
+            print("✅ Connected to PostgreSQL.")
+            return conn
+        except psycopg2.OperationalError as e:
+            print(f"❌ Attempt {attempt + 1}: Failed to connect to DB: {e}")
+            time.sleep(delay)
+    raise Exception("❌ Could not connect to the database after several attempts.")
 
 # Redis connection
 redis_client = redis.Redis(
