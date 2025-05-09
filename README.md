@@ -4,19 +4,15 @@ A simple RESTful API built with **FastAPI**, using **PostgreSQL** as the databas
 
 my-fastapi-app/
 ├── app/
-│ 
 │   ├── main.py         
-│   ├── models.py/
-│   |___database.py.py    
-|   
-│  
-├── Dockerfile              
+│   ├── models.py
+│   └── database.py
+├── Dockerfile               
 ├── docker-compose.yml       
 ├── nginx/
 │   └── default.conf         
-│
 ├── requirements.txt         
-└── README.md                 
+└── README.md         
 
 
 ## 📦 Tech Stack
